@@ -1,0 +1,17 @@
+{
+  "name": "DDUpdateUploadServer",
+  "keywords": "wifi, upload, update, server",
+  "description": "Fancy HTTP Update server based on the ESP8266WebServer, /upload to upload files to SPIFFS, /update to update firmware",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/debsahu/DDUpdateUploadServer.git"
+  },
+  "version": "1.0.0",
+  "authors": {
+    "name": "Debashish Sahu",
+    "url": "https://github.com/debsahu/DDUpdateUploadServer",
+    "maintainer": true
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif8266"
+}

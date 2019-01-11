@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=0.5">
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #c2a4c0
+        }
+        
+        #dropFileForm {
+            margin: auto 100px;
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: .5s
+        }
+        
+        #dropFileForm #fileLabel {
+            background-color: rgba(247, 0, 255, .5);
+            display: block;
+            padding: 24px;
+            position: relative;
+            cursor: pointer
+        }
+        
+        #dropFileForm #fileInput {
+            display: none
+        }
+        
+        #dropFileForm #fileLabel:after,
+        #dropFileForm #fileLabel:before {
+            position: absolute;
+            content: "";
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            z-index: -2;
+            border-radius: 8px 8px 0 0
+        }
+        
+        #dropFileForm #fileLabel:before {
+            z-index: -1;
+            background: repeating-linear-gradient(45deg, transparent, transparent 5%, #000 5%, #000 10%);
+            opacity: 0;
+            transition: .5s
+        }
+        
+        #dropFileForm.fileHover #fileLabel:before {
+            opacity: .25
+        }
+        
+        #dropFileForm .uploadButton {
+            border: 0;
+            outline: 0;
+            width: 100%;
+            padding: 8px;
+            font-size: 50px;
+            background-color: #970183;
+            color: #fff;
+            cursor: pointer
+        }
+        
+        #dropFileForm.fileHover {
+            box-shadow: 0 0 16px #32cd32
+        }
+        
+        #fileLabelText {
+            color: #000;
+            font-size: 40px;
+            font-family: Arial, Helvetica, sans-serif
+        }
+    </style>
+</head>
+
+<body>
+    <form id="dropFileForm" action="/upload" method="post" onsubmit="uploadFiles(event)">
+        <input type="file" name="files[]" id="fileInput" multiple onchange="addFiles(event)">
+        <label for="fileInput" id="fileLabel" ondragover="overrideDefault(event),fileHover()" ondragenter="overrideDefault(event),fileHover()" ondragleave="overrideDefault(event),fileHoverEnd()" ondrop="overrideDefault(event),fileHoverEnd(),addFiles(event)">
+            <svg width="300" height="300" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1344 1344q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm256 0q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128-224v320q0 40-28 68t-68 28h-1472q-40 0-68-28t-28-68v-320q0-40 28-68t68-28h465l135 136q58 56 136 56t136-56l136-136h464q40 0 68 28t28 68zm-325-569q17 41-14 70l-448 448q-18 19-45 19t-45-19l-448-448q-31-29-14-70 17-39 59-39h256v-448q0-26 19-45t45-19h256q26 0 45 19t19 45v448h256q42 0 59 39z" />
+            </svg>
+            <br><span id="fileLabelText">Choose multiple files or drag them here</span>
+            <br><span id="uploadStatus"></span></label>
+        <input type="submit" value="Upload to SPIFFs" class="uploadButton">
+    </form>
+    <script>
+        function overrideDefault(e) {
+            e.preventDefault(), e.stopPropagation()
+        }
+
+        function fileHover() {
+            dropFileForm.classList.add("fileHover")
+        }
+
+        function fileHoverEnd() {
+            dropFileForm.classList.remove("fileHover")
+        }
+
+        function addFiles(e) {
+            droppedFiles = e.target.files || e.dataTransfer.files, showFiles(droppedFiles)
+        }
+
+        function showFiles(e) {
+            noOfFiles = e.length;
+            e.length > 1 ? fileLabelText.innerText = e.length + " files selected" : fileLabelText.innerText = e[0].name
+        }
+
+        function uploadFiles(e) {
+            e.preventDefault();
+            if (noOfFiles == 0) {
+                fileLabelText.innerText = "Select at least 1 file!"
+            } else {
+                changeStatus("Uploading...");
+                for (var t, n = new FormData, o = 0; t = droppedFiles[o]; o++) n.append(fileInput.name, t, t.name);
+                fetch(dropFileForm.action, {
+                    method: dropFileForm.method,
+                    body: n
+                }).then(function(e) {
+                    if(e.ok){
+                        return e.text();
+                    }
+                    throw new Error('Network response was not ok.');
+                }).then(function(e) {
+                    setTimeout(function(){
+                        console.log('OK: ', e);
+                        location.reload(); 
+                    }, 500);
+                }).catch(function(e) {
+                    console.log('Error: ', e.message);
+                })
+            }
+        }
+
+        function changeStatus(e) {
+            uploadStatus.innerText = e
+        }
+        var dropFileForm = document.getElementById("dropFileForm"),
+            fileLabelText = document.getElementById("fileLabelText"),
+            uploadStatus = document.getElementById("uploadStatus"),
+            fileInput = document.getElementById("fileInput"),
+            droppedFiles,
+            noOfFiles = 0
+    </script>
+</body>
+
+</html>
