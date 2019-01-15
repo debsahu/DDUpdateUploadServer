@@ -78,6 +78,11 @@
             font-size: 40px;
             font-family: Arial, Helvetica, sans-serif
         }
+        #uploadStatus{
+            color: rgb(112, 0, 0);
+            font-size: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
 </head>
 
@@ -124,10 +129,21 @@
                     method: dropFileForm.method,
                     body: t
                 }).then(function(e) {
-                    return e.text()
+                    if(e.ok){
+                        return e.text();
+                    }
+                    throw new Error('Network response was not ok.');
                 }).then(function(e) {
-                    console.log(e)
-                })
+                    changeStatus( e + ", reload in 30s!");
+                    console.log(e);
+                    setTimeout(function(){location.reload();}, 30000);
+                }).catch(function(e) {
+                    changeStatus("Error: " + e.message);
+                    console.log('Error: ', e.message);
+                    setTimeout(function(){
+                      location.reload(); 
+                    }, 5000);
+                });
             }
         }
 
