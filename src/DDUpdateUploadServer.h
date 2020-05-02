@@ -12,7 +12,7 @@
 
 #define USE_HTML_MIN_GZ
 
-class ESP8266WebServer;
+// class ESP8266WebServer;
 
 class DDUpdateUploadServer
 {
